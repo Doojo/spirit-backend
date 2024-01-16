@@ -1,5 +1,6 @@
 
 const express = require('express');
+const app = express();
 const cors = require('cors');
 
 app.use(cors());
@@ -11,7 +12,8 @@ app.get('/', (req, res) => {
   res.send({ message: 'Hello from  Backend' });
 });
 
-
+const port = 4000;
+const host = "localhost";
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });
