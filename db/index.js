@@ -1,2 +1,1 @@
-const connectToDB = require('./connection')
-module.exports =  {connectToDB};
+export { connectToDB } from "./connection.js";

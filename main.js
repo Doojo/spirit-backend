@@ -1,23 +1,25 @@
+import { connectToDB } from "./db/index.js";
+import dotenv from "dotenv";
+import app from "./app.js";
 
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const {connectToDB} = require('./db');
-//connection to database
-connectToDB();
-
-
-app.use(cors());
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json());
-
-// backend routes
-app.get('/', (req, res) => {
-  res.send({ message: 'Hello from  Backend' });
+dotenv.config({
+  path: "./.env.sample"
 });
 
-const port = 4000;
+
+const port = process.env.PORT || 8000;
 const host = "localhost";
-app.listen(port, host, () => {
-  console.log(`[ ready ] http://${host}:${port}`);
+
+
+connectToDB()
+.then(() => {
+    app.listen(port, host, () => {
+      console.log(`[ ready ] http://${host}:${port}`);
+    });
+    app.on("error", (err) => {
+        console.log("Server error: ", err);
+    });
+})
+.catch((err) => {
+    console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
 });
