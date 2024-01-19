@@ -2,6 +2,10 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const {connectToDB} = require('./db');
+//connection to database
+connectToDB();
+
 
 app.use(cors());
 app.use(express.urlencoded({ extended: false }))

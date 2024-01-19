@@ -21,6 +21,10 @@ const userSchema = new Schema({
         type: Number,
         default: 0,
     },
+    vehicleDetails:{
+        type:String,
+        ref:'vehicles'
+    }
 
 }, {timestamps: true});
 
