@@ -1,23 +1,34 @@
 import express  from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import router from "./routers/index.js";
+import { connectToDB } from "./db/index.js";
+import dotenv from "dotenv";
 
-const app = new express();
+const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
+dotenv.config({
+path: "./.env.sample"
+});
 
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express.static("public"));
+const port = process.env.PORT || 8000;
+const host = "localhost";
 
+connectToDB();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.send({ message: 'Hello from  Backend' });
 });
-  
-import router from "./routes/index.js";
-
 app.use("/api/v1/", router);
 
-export default app;
+app.listen(port, host, () => {
+    console.log(`[ ready ] http://${host}:${port}`);
+  });
+  app.on("error", (err) => {
+      console.log("Server error: ", err);
+  });

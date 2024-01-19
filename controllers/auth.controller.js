@@ -1,20 +1,15 @@
 import {User} from "../db/models/index.js";
 import {ApiError, ApiResponse, asyncHandler, uploadOnCloudinary} from "../utils/index.js";
 
-const auth = {
-    register: asyncHandler(async (req, res, next) => {
-        const {username,fullName, email, password} = req.body;
+class Auth{
+    async register(req, res){
 
-        // Check if all fields are provided
-        if (
-            [fullName, email, username, password].some((field) => field?.trim() === "")
-        ) {
-            throw new ApiError(400, "All fields are required")
-        }
+        const {userName,fullName, email, password, imgData} = req.body;
+        try {
 
         // Check if user already exists
         const existedUser = await User.findOne({
-            $or: [{ username }, { email }]
+            $or: [{ userName }, { email }]
         })
     
         if (existedUser) {
@@ -22,38 +17,30 @@ const auth = {
         }
 
         // handling image upload
-        const avatarLocalPath = req.files?.avatar[0]?.path;
-        if (!avatarLocalPath) {
-            throw new ApiError(400, "Avatar file is required")
-        }
-        const avatar = await uploadOnCloudinary(avatarLocalPath)
-        if (!avatar) {
-            throw new ApiError(400, "Avatar file uplode failed")
-        }
+        const avatarLocalPath = imgData?.path;
+  
+        const avatar = await uploadOnCloudinary(avatarLocalPath);
+        
 
         // create user
-
         const user = await User.create({
             fullName,
-            avatar: avatar.url,
+            avatar: avatar?avatar.url:"",
             email, 
             password,
-            username: username.toLowerCase()
+            userName: userName.toLowerCase()
         })
     
-        const createdUser = await User.findById(user._id).select(
-            "-password -refreshToken"
-        )
-    
-        if (!createdUser) {
-            throw new ApiError(500, "Something went wrong while registering the user")
-        }
-    
-        return res.status(201).json(
-            new ApiResponse(200, createdUser, "User registered Successfully")
-        )
+        const createdUser = await User.findById(user._id).select("-password -refreshToken")
 
-    }),
+        res.status(201).send(new ApiResponse(200, createdUser, "User registered Successfully"))
+
+        } catch (error) {
+            
+            res.status(500).send(error.message);
+        }
+        
+    }
 }
 
-export default auth;
+export default Auth;
