@@ -1,5 +1,5 @@
 import {User} from "../db/models/index.js";
-import {ApiError, ApiResponse, asyncHandler, uploadOnCloudinary} from "../utils/index.js";
+import {ApiError, ApiResponse, asyncHandler, createJwtToken, uploadOnCloudinary} from "../utils/index.js";
 
 class Auth{
     async register(req, res){
@@ -31,9 +31,11 @@ class Auth{
             userName: userName.toLowerCase()
         })
     
-        const createdUser = await User.findById(user._id).select("-password -refreshToken")
+        const createdUser = await User.findById(user._id).select("-password -refreshToken");
+        // creating auth jwt token
+        const token = createJwtToken(createdUser);
 
-        res.status(201).send(new ApiResponse(200, createdUser, "User registered Successfully"))
+        res.status(201).send({body:createdUser,token:token,message:"user created successfully"});
 
         } catch (error) {
             
