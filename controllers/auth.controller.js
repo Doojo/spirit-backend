@@ -11,7 +11,7 @@ const twilioClient = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_
 class Auth {
     async register(req, res) {
 
-        const { userName, fullName, mobile, email, password, imgData } = req.body;
+        const { userName, fullName, mobile, email, imgData } = req.body;
         try {
 
             // Check if user already exists
