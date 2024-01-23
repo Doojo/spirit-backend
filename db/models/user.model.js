@@ -13,6 +13,12 @@ const userSchema = new Schema({
         min: 1,
         max: 4,
     },
+    mobile:{
+        type:String,
+        require:true,
+        length:10
+
+    },
     email: {
         type: String,
         required: true,

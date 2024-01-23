@@ -6,5 +6,6 @@ const auth  = new Auth();
 const authRouter = Router();
 
 authRouter.post("/register", auth.register);
-
+authRouter.post("/otp/create",auth.createOTP);
+authRouter.post("/otp/verify",auth.verifyOTP);
 export default authRouter;

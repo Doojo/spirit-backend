@@ -1,15 +1,13 @@
 import express  from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import router from "./routers/index.js";
 import { connectToDB } from "./db/index.js";
-import dotenv from "dotenv";
 
 const app = express();
 
-dotenv.config({
-path: "./.env.sample"
-});
 
 const port = process.env.PORT || 8000;
 const host = "localhost";
