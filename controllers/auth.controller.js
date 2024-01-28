@@ -3,6 +3,7 @@ import { ApiError, ApiResponse, asyncHandler, createJwtToken, generateOTP, uploa
 import twilio from 'twilio'
 import dotenv from 'dotenv'
 import { userOtp } from "../db/models/otp.model.js";
+import { mailOptions, mailTransporter } from "../services/mail.transporter.js";
 dotenv.config()
 
 
@@ -55,25 +56,35 @@ class Auth {
     // creating otp with twilio and storing in db
     async createOTP(req, res) {
 
-        const { phone } = req.body;
+        const { email } = req.body;
         try {
 
             //otp generation
             const otp = generateOTP();
 
-            //twilio api call to send message
-            const message = await twilioClient.messages.create({
-                body: `This is from spirit  - Your OTP is: ${otp}`,
-                from: process.env.TWILIO_PHONE_NUMBER,
-                to: `+91${ phone }`,
-            })
+            mailOptions.subject = "Email OTP verification "
+            mailOptions.to = email
+            mailOptions.html = `
+            <div>
+            <h1>From Spirit Team: </h1>
+            <p> your otp is : ${otp}</p>
+            </div>
+            `
 
-            //creating userOtp in database
-            await userOtp.create({ otp, phone });
+            mailTransporter.sendMail(mailOptions, async function (error, info) {
+                if (error) {
+                    res.status(402).send("error in sending email-otp");
+                    
+                } else {
+                    //creating userOtp in database
+                    await userOtp.create({ otp, email });
+                    res.send({ msg: "otp sent successfully" })
+                }
+            });
 
-            res.send({ msg: "otp sent successfully", body: message })
+
         } catch (error) {
-            console.log(error);
+           
             res.status(402).send({
                 msg: "error in sending otp to user"
             })
@@ -83,23 +94,25 @@ class Auth {
     // verifinying the provided otp from db
     async verifyOTP(req, res) {
 
-        const { otp, phone } = req.body;
+        const { otp, email } = req.body;
         try {
 
-            const match = await userOtp.findOneAndDelete({ phone, otp });
+            const match = await userOtp.findOneAndDelete({ email, otp });
             if (match) {
 
+                
                 res.status(200).send({
                     msg: "otp verified successfully",
                     body: match
                 })
 
-                return; 
+                return;
+            }else{
+   
+                res.status(405).send({ msg: 'invalid otp or expired otp', body: { otp, email } });
             }
-
-            res.status(405).send({ msg: 'invalid otp or expired otp', body: { otp, phone } });
         } catch (error) {
-            res.status(405).send({ msg: 'some error occured to verify otp', body: { otp, phone, error } });
+            res.status(405).send({ msg: 'some error occured to verify otp', body: { otp, email, error } });
 
         }
     }

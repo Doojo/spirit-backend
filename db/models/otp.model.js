@@ -3,7 +3,7 @@ import mongoose, {Schema} from "mongoose";
 const userOtpSchema = new Schema({
 
     otp:String,
-    phone:String
+    email:String
 
 }, {timestamps: true});
 
