@@ -10,7 +10,6 @@ const app = express();
 
 
 const port = process.env.PORT || 8000;
-const host = "localhost";
 
 connectToDB();
 
@@ -24,8 +23,8 @@ app.get('/', (req, res) => {
 });
 app.use("/api/v1/", router);
 
-app.listen(port, host, () => {
-    console.log(`[ ready ] http://${host}:${port}`);
+app.listen(port, `0.0.0.0`, () => {
+    console.log(`[ ready ]`);
   });
   app.on("error", (err) => {
       console.log("Server error: ", err);

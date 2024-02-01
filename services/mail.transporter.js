@@ -1,19 +1,22 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv'
+dotenv.config()
 
 var mailOptions = {
     to:"",
-    from:"20bcs034@iiitdwd.ac.in",
+    from:process.env.EMAIL,
     body:""
 }
 
 // mail transporter
 const mailTransporter = nodemailer.createTransport({
-    service:'gmail',
+    service: 'hotmail',
+    host: 'smtp-mail.outlook.com',
     port: 587,
     secure: false, 
     auth: {
-        user: '20bcs034@iiitdwd.ac.in',
-        pass: 'clza uuzx pjyh qwaw',
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
     },
     tls:{
         rejectUnauthorized: false
