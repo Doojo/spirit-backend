@@ -1,25 +1,42 @@
 import mongoose, {Schema} from "mongoose";
 
 const userSchema = new Schema({
+    userName: {
+        type: String,
+        required: true,
+        minlength: 4,
+        maxlength: 20,
+        unique: true
+    },
+    level: {
+        type: Number,
+        min: 1,
+        max: 4,
+    },
+    mobile:{
+        type:String,
+        require:true,
+        length:10
+
+    },
     email: {
         type: String,
         required: true,
-        trim: true,
-        lowercase: true,
-    },
-    phone: {
-        type: String,
-        required: true,
-        trim: true,
+        unique: true
     },
     fullName: {
         type: String,
         required: true,
-        trim: true,
     },
-    level: {
-        type: Number,
-        default: 0,
+    avatar: {
+        type: String,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    refreshToken: {
+        type: String,
     },
 
 }, {timestamps: true});
