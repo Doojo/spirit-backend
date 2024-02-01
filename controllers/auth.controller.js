@@ -10,18 +10,18 @@ dotenv.config()
 const twilioClient = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
 class Auth {
-    async register(req, res) {
+    async createProfile(req, res) {
 
-        const { userName, fullName, mobile, email, imgData } = req.body;
+        const { name, mobile, email, imgData } = req.body;
         try {
 
             // Check if user already exists
             const existedUser = await User.findOne({
-                $or: [{ userName }, { email }]
+                $or: [ { email }]
             })
 
             if (existedUser) {
-                throw new ApiError(409, "User with email or username already exists")
+                throw new ApiError(409, "User with email or mobile already exists")
             }
 
             // handling image upload
@@ -32,14 +32,15 @@ class Auth {
 
             // create user
             const user = await User.create({
-                fullName,
+                name,
                 avatar: avatar ? avatar.url : "",
                 email,
-                password,
-                userName: userName.toLowerCase()
+                mobile,
+                isVerified: true,
+                level: 1
             })
 
-            const createdUser = await User.findById(user._id).select("-password -refreshToken");
+            const createdUser = await User.findById(user._id).select(" -refreshToken");
             // creating auth jwt token
             const token = createJwtToken(createdUser);
 

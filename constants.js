@@ -1,1 +1,1 @@
-export const DB_NAME = "spirit";
+export const DB_NAME = "spiritBackend";
