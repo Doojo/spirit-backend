@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.use("/api/v1/", router);
 
 app.listen(port, `0.0.0.0`, () => {
-    console.log(`[ ready ]`);
+    console.log(`[ ready ] at port: ${port}`);
   });
   app.on("error", (err) => {
       console.log("Server error: ", err);

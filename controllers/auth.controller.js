@@ -12,28 +12,23 @@ const twilioClient = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_
 class Auth {
     async createProfile(req, res) {
 
-        const { name, mobile, email, imgData } = req.body;
+        const { name, mobile, email,imgUrl } = req.body;
         try {
 
             // Check if user already exists
             const existedUser = await User.findOne({
-                $or: [ { email }]
+                $or: [{ email }]
             })
 
             if (existedUser) {
                 throw new ApiError(409, "User with email or mobile already exists")
             }
 
-            // handling image upload
-            const avatarLocalPath = imgData?.path;
-
-            const avatar = await uploadOnCloudinary(avatarLocalPath);
-
 
             // create user
             const user = await User.create({
                 name,
-                avatar: avatar ? avatar.url : "",
+                avatar: imgUrl,
                 email,
                 mobile,
                 isVerified: true,
@@ -41,10 +36,8 @@ class Auth {
             })
 
             const createdUser = await User.findById(user._id).select(" -refreshToken");
-            // creating auth jwt token
-            const token = createJwtToken(createdUser);
 
-            res.status(201).send({ body: createdUser, token: token, message: "user created successfully" });
+            res.status(201).send({ body: createdUser });
 
         } catch (error) {
 
@@ -75,17 +68,18 @@ class Auth {
             mailTransporter.sendMail(mailOptions, async function (error, info) {
                 if (error) {
                     res.status(402).send("error in sending email-otp");
-                    
+                    return;
+
                 } else {
                     //creating userOtp in database
                     await userOtp.create({ otp, email });
-                    res.send({ msg: "otp sent successfully" })
                 }
             });
+            res.send({ msg: "otp sent successfully" })
 
 
         } catch (error) {
-           
+
             res.status(402).send({
                 msg: "error in sending otp to user"
             })
@@ -99,19 +93,37 @@ class Auth {
         try {
 
             const match = await userOtp.findOneAndDelete({ email, otp });
-            if (match) {
+            if(!match){
+                res.status(405).send({
+                    msg: "wrong otp entered",
+                })
+                return;
+            }
+             // Check if user already exists
+             const existedUser = await User.findOne({
+                email
+            })
 
-                
+            const token = createJwtToken({email});
+
+            if (existedUser && match) {
                 res.status(200).send({
                     msg: "otp verified successfully",
-                    body: match
+                    body: {
+                        token,
+                        user:existedUser
+                    }
                 })
-
                 return;
-            }else{
-   
-                res.status(405).send({ msg: 'invalid otp or expired otp', body: { otp, email } });
             }
+
+            res.status(200).send({
+                msg: "otp verified successfully",
+                body: {
+                    token
+                }
+            })
+
         } catch (error) {
             res.status(405).send({ msg: 'some error occured to verify otp', body: { otp, email, error } });
 
