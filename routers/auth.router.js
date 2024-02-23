@@ -6,10 +6,12 @@ import { verify } from "../middlewares/verify.js";
 const auth  = new Auth();
 const authRouter = Router();
 
-authRouter.post("/register", auth.createProfile);
+authRouter.post("/signup-start", auth.signUpStart);
+authRouter.post("/verify-and-signup", auth.verifyOTPAndRegister);
+
 authRouter.get("/verify/:token",verify, (req,res)=>{
     res.status(200).send({messsage:"user verified successfully", user:req.rootUser});
 });
-authRouter.post("/otp/create",auth.createOTP); 
-authRouter.post("/otp/verify",auth.verifyOTP);
+authRouter.post("/signin-start",auth.signInStart); 
+authRouter.post("/verify-and-signin",auth.verifyOTPAndSignIn);
 export default authRouter;
