@@ -23,9 +23,9 @@ app.get('/', (req, res) => {
 });
 app.use("/api/v1/", router);
 
-app.listen(port, `0.0.0.0`, () => {
-    console.log(`[ ready ] at port: ${port}`);
-  });
-  app.on("error", (err) => {
-      console.log("Server error: ", err);
-  });
+const PORT = process.env.PORT || 4000
+
+const server = app.listen(PORT || 4000 ,()=>{
+
+    console.log("listning at port 4000");
+})
