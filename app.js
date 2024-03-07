@@ -9,8 +9,6 @@ import { connectToDB } from "./db/index.js";
 const app = express();
 
 
-const port = process.env.PORT || 8000;
-
 connectToDB();
 
 app.use(cors());
@@ -23,9 +21,9 @@ app.get('/', (req, res) => {
 });
 app.use("/api/v1/", router);
 
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 8000
 
-const server = app.listen(PORT || 4000 ,()=>{
+const server = app.listen(PORT || 8000 ,()=>{
 
-    console.log("listning at port 4000");
+    console.log("listning at port 8000");
 })
