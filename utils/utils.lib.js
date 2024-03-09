@@ -2,16 +2,16 @@ import jwt from 'jsonwebtoken';
 import { userOtp } from '../db/models/otp.model.js';
 import { mailOptions, mailTransporter } from '../services/mail.transporter.js';
 
-export const createJwtToken = (userDetails)=>{
-    
-    const token =  jwt.sign(userDetails, process.env.JWT_SECRET_KEY,{ expiresIn: '14d' });
+export const createJwtToken = (userDetails) => {
+
+    const token = jwt.sign(userDetails, process.env.JWT_SECRET_KEY, { expiresIn: '14d' });
     return token;
 }
-export const generateOTP = ()=>{
+export const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
-} 
+}
 
-export const createOTP = (email) => {
+export const createOTP = async(email) => {
 
     try {
         //otp generation
@@ -28,6 +28,7 @@ export const createOTP = (email) => {
 
         mailTransporter.sendMail(mailOptions, async function (error, info) {
             if (error) {
+                console.log(error)
                 throw new Error("error while sending mail")
                 return;
 
