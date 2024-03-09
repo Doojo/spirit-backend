@@ -1,6 +1,5 @@
 import { User } from "../db/models/index.js";
 import { ApiError, ApiResponse, asyncHandler, createJwtToken, createOTP, generateOTP, uploadOnCloudinary } from "../utils/index.js";
-import twilio from 'twilio'
 import dotenv from 'dotenv'
 import { userOtp } from "../db/models/otp.model.js";
 import { mailOptions, mailTransporter } from "../services/mail.transporter.js";
