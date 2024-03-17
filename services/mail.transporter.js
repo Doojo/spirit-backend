@@ -10,9 +10,9 @@ var mailOptions = {
 
 // mail transporter
 const mailTransporter = nodemailer.createTransport({
-    service: 'hotmail',
-    host: 'smtp-mail.outlook.com',
-    port: 587,
+    service: 'Gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
     secure: false, 
     auth: {
         user: process.env.EMAIL,
